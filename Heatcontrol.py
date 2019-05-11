@@ -13,7 +13,7 @@ path = "/home/pi/Desktop/Schaltung/data" + str(datetime.datetime.now()) + ".txt"
 f = open(path, "w")
 f.write("started new\n")
 
-cooledLastTime = false
+cooledLastTime = False
 procedure = ""
     
 while True:
@@ -28,7 +28,7 @@ while True:
     if innen < 25:
 	
         procedure = "heat"
-        cooledLastTime = false
+        cooledLastTime = False
 		
         GPIO.output(5, GPIO.LOW)
         GPIO.output(6, GPIO.HIGH)
@@ -36,7 +36,7 @@ while True:
     elif innen > 27 and aussen < innen:
 	
         procedure = "cool"
-        cooledLastTime = true
+        cooledLastTime = True
 		
         GPIO.output(6, GPIO.LOW)
 		
@@ -48,7 +48,7 @@ while True:
     else:
 	
         procedure = "perfect"
-        cooledLastTime = false
+        cooledLastTime = False
 		
         GPIO.output(5, GPIO.LOW)
         GPIO.output(6, GPIO.LOW)
