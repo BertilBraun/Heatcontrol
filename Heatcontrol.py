@@ -8,9 +8,13 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(5, GPIO.OUT)
 GPIO.setup(6, GPIO.OUT)
 
-f = open("/home/pi/Desktop/Schaltung/data.txt", "a")
+path = "/home/pi/Desktop/Schaltung/data" + str(datetime.datetime.now()) + ".txt"
+
+f = open(path, "w")
 f.write("started new\n")
-f.close()
+
+cooledLastTime = false
+procedure = ""
     
 while True:
     
@@ -20,29 +24,41 @@ while True:
         
     innen = TS.read_temp(0)
     aussen = TS.read_temp(1)
-    doing = ""
 
     if innen < 25:
-        doing = "heat"
+	
+        procedure = "heat"
+        cooledLastTime = false
+		
         GPIO.output(5, GPIO.LOW)
         GPIO.output(6, GPIO.HIGH)
+		
     elif innen > 27 and aussen < innen:
-        doing = "cool"
-        GPIO.output(5, GPIO.HIGH)
+	
+        procedure = "cool"
+        cooledLastTime = true
+		
         GPIO.output(6, GPIO.LOW)
+		
+        if not cooledLastTime:
+            GPIO.output(5, GPIO.HIGH)
+        else:
+            GPIO.output(5, GPIO.LOW)
+			
     else:
-        doing = "perfect"
+	
+        procedure = "perfect"
+        cooledLastTime = false
+		
         GPIO.output(5, GPIO.LOW)
         GPIO.output(6, GPIO.LOW)
 
-    LCD.lcd.message = 'Innen  : ' + str(innen) + 'ßC\n' + 'Aussen : ' + str(aussen) + 'ßC'
+    currentTime = str(datetime.datetime.now())
+    message = 'Innen  : ' + str(innen) + 'ßC\n' + 'Aussen : ' + str(aussen) + 'ßC'
+	
+    LCD.lcd.message = message
 
-    output = "Innen: " + str(innen) + " Aussen: " + str(aussen) + " : " + doing + " : " + str(datetime.datetime.now()) + "\n"
-    
-    print(output)
-    
-    f = open("/home/pi/Desktop/Schaltung/data.txt", "a")
-    f.write(output)
-    f.close()
+    f.write(message + " : " + procedure + " : " + currentTime + "\n")
+    f.flush()
     
     time.sleep(1)
