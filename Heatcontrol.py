@@ -24,33 +24,42 @@ while True:
         
     innen = TS.read_temp(0)
     aussen = TS.read_temp(1)
+    
 
     if innen < 25:
 	
+        if cooledLastTime:
+            GPIO.output(5, GPIO.HIGH)
+        else:
+            GPIO.output(5, GPIO.LOW)
+            
         procedure = "heat"
         cooledLastTime = False
 		
-        GPIO.output(5, GPIO.LOW)
         GPIO.output(6, GPIO.HIGH)
 		
     elif innen > 27 and aussen < innen:
 	
-        procedure = "cool"
-        cooledLastTime = True
-		
-        GPIO.output(6, GPIO.LOW)
-		
         if not cooledLastTime:
             GPIO.output(5, GPIO.HIGH)
         else:
             GPIO.output(5, GPIO.LOW)
+            
+        procedure = "cool"
+        cooledLastTime = True
+		
+        GPIO.output(6, GPIO.LOW)		
 			
     else:
 	
+        if cooledLastTime:
+            GPIO.output(5, GPIO.HIGH)
+        else:
+            GPIO.output(5, GPIO.LOW)
+            
         procedure = "perfect"
         cooledLastTime = False
 		
-        GPIO.output(5, GPIO.LOW)
         GPIO.output(6, GPIO.LOW)
 
     currentTime = str(datetime.datetime.now())
@@ -58,6 +67,7 @@ while True:
 	
     LCD.lcd.message = message
 
+    print(message + " : " + procedure + " : " + currentTime + "\n")
     f.write(message + " : " + procedure + " : " + currentTime + "\n")
     f.flush()
     
