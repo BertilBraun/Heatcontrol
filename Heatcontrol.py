@@ -13,7 +13,7 @@ path = "/home/pi/Desktop/Schaltung/data" + str(datetime.datetime.now()) + ".txt"
 f = open(path, "w")
 f.write("started new\n")
 
-cooledLastTime = False
+heatedLastTime = False
 procedure = ""
     
 while True:
@@ -28,39 +28,39 @@ while True:
 
     if innen < 25:
 	
-        if cooledLastTime:
-            GPIO.output(5, GPIO.HIGH)
+        if not heatedLastTime:
+            GPIO.output(6, GPIO.HIGH)
         else:
-            GPIO.output(5, GPIO.LOW)
+            GPIO.output(6, GPIO.LOW)
             
         procedure = "heat"
-        cooledLastTime = False
+        heatedLastTime = False
 		
-        GPIO.output(6, GPIO.HIGH)
+        GPIO.output(5, GPIO.LOW)
 		
     elif innen > 27 and aussen < innen:
-	
-        if not cooledLastTime:
-            GPIO.output(5, GPIO.HIGH)
+	  
+        if heatedLastTime:
+            GPIO.output(6, GPIO.HIGH)
         else:
-            GPIO.output(5, GPIO.LOW)
-            
+            GPIO.output(6, GPIO.LOW)
+          
         procedure = "cool"
-        cooledLastTime = True
+        heatedLastTime = True
 		
-        GPIO.output(6, GPIO.LOW)		
+        GPIO.output(5, GPIO.HIGH)		
 			
     else:
 	
-        if cooledLastTime:
-            GPIO.output(5, GPIO.HIGH)
+        if heatedLastTime:
+            GPIO.output(6, GPIO.HIGH)
         else:
-            GPIO.output(5, GPIO.LOW)
+            GPIO.output(6, GPIO.LOW)
             
         procedure = "perfect"
-        cooledLastTime = False
+        heatedLastTime = False
 		
-        GPIO.output(6, GPIO.LOW)
+        GPIO.output(5, GPIO.LOW)
 
     currentTime = str(datetime.datetime.now())
     message = 'Innen  : ' + str(innen) + 'ßC\n' + 'Aussen : ' + str(aussen) + 'ßC'
